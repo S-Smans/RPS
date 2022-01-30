@@ -5,68 +5,77 @@ function computerPlay() {
     return choice[number];
 }
 
-//  function checks who the winner is and returns a string that declares the winner
+// function checks who the winner is and returns a string that declares the winner
 function playRound(playerSelection, computerSelection) {
 
+    let computerScore = document.getElementById('computer-score');
+    let playerScore = document.getElementById('player-score');
+
+
     if (playerSelection == computerSelection) {
-        return 'Tied!';
+        return '> Tied!';
     } else if (playerSelection == 'rock' && computerSelection == 'paper') {
-        computerScore++;
-        return 'You lose! Paper beats Rock';
+        computerScore.textContent++;
+        return '> You lose! Paper beats Rock';
     } else if (playerSelection == 'paper' && computerSelection == 'rock') {
-        playerScore++;
-        return 'You win! Paper beats Rock';
+        playerScore.textContent++;
+        return '> You win! Paper beats Rock';
     } else if (playerSelection == 'rock' && computerSelection == 'scissors') {
-        playerScore++;
-        return 'You win! Rock beats Scissors';
+        playerScore.textContent++;
+        return '> You win! Rock beats Scissors';
     } else if (playerSelection == 'scissors' && computerSelection == 'rock') {
-        computerScore++;
-        return 'You lose! Rock beats Scissors'
+        computerScore.textContent++;
+        return '> You lose! Rock beats Scissors'
     } else if (playerSelection == 'paper' && computerSelection == 'scissors') {
-        computerScore++;
-        return 'You lose! Scissors beats Paper';
+        computerScore.textContent++;
+        return '> You lose! Scissors beats Paper';
     } else if (playerSelection == 'scissors' && computerSelection == 'paper') {
-        playerScore++;
-        return 'You win! Scissors beats Paper';
+        playerScore.textContent++;
+        return '> You win! Scissors beats Paper';
     } 
 
     return false;
 }
+
 // main game function that keeps score of 5 games
-function game() {
+function game(button) {
+    if (finishedGames >= 5) {
+        restartGame();
+    }
 
+    finishedGames++;
 
-    let playerScore = 0;
-    let computerScore = 0;
-    let finishedGames = 0;
+    // gets the result of the round
+    let result = playRound(button.innerText.toLowerCase(), computerPlay());
+    text.textContent += `\n${result}`;
 
-    // game loop for 5 finished games
-    while (finishedGames < 5) {
-        
-        let playerInput = prompt('You\'re playing against a computer.\nPick rock, paper or scissors?').toLowerCase();
-        let result = playRound(playerInput, computerPlay());
+    if (finishedGames >= 5) {
+        gameEnd();
+    }
+}
 
-        // if false game doesn't count as finished
-        if (result === false) {
-            console.log('Incorrect input. Try again.');
-            continue;
-        }
+function gameEnd() {
+    let computerScore = document.getElementById('computer-score').innerText;
+    let playerScore = document.getElementById('player-score').innerText;
 
-        console.log(result);
-        finishedGames++;
+    // Logs out who the winner is
+    if (playerScore > computerScore) {
+        text.textContent += '\n\n> Congratulations! You Won!';
+    } else if (computerScore > playerScore) {
+        text.textContent += '\n\n> Sorry. You Lost!';
+    } else {
+        text.textContent += '\n\n> Game ended in a Tie!';
     }
 
     // Logs out the games score
-    console.log(`Score: Player ${playerScore}, Computer ${computerScore}`);
-    
-    // Logs out who the winner is
-    if (playerScore > computerScore) {
-        console.log('Congratulations! You Won!');
-    } else if (computerScore > playerScore) {
-        console.log('Sorry. You Lost!');
-    } else {
-        console.log('Game ended in a Tie!');
-    }
+    text.textContent += `\n> Score: Player ${playerScore}, Computer ${computerScore}`;
+}
+
+function restartGame() {
+    text.textContent = '> Starting a new round of Rock, Paper and Scissors';
+    document.getElementById('computer-score').innerText = 0;
+    document.getElementById('player-score').innerText = 0;
+    finishedGames = 0;
 }
 
 // gets textarea from html 
@@ -76,10 +85,11 @@ text.textContent = "> You're playing against a computer. Pick rock, paper or sci
 // add eventlisteners for buttons
 let buttons = document.querySelectorAll('button');
 
+let finishedGames = 0;
+
+// when button pressed start round 
 buttons.forEach(button => {
     button.addEventListener('click', () => {
-        playRound(button.innerText.toLowerCase(), computerPlay());
+        game(button);
     });
 });
-
-// when button pressed start round one
